@@ -1,0 +1,39 @@
+{
+    "presets": "2D",
+    "models": [
+        "segmentation"
+    ],
+    "model_file_rois": "",
+    "model_file_seg": "data/models/unet_agarpads_seg_optimized.hdf5",
+    "model_file_track": "data/models/unet_agarpads_track_optimized.hdf5",
+    "target_size_rois": [
+        512,
+        512
+    ],
+    "target_size_seg": [
+        512,
+        512
+    ],
+    "target_size_track": [
+        256,
+        256
+    ],
+    "training_set_rois": "",
+    "training_set_seg": "data/training/segmentation_set/",
+    "training_set_track": "data/training/tracking_set/",
+    "rotation_correction": true,
+    "drift_correction": true,
+    "crop_windows": true,
+    "min_roi_area": 500,
+    "whole_frame_drift": true,
+    "min_cell_area": 10,
+    "save_format": [
+        "pickle",
+        "legacy",
+        "movie"
+    ],
+    "TF_CPP_MIN_LOG_LEVEL": "1",
+    "memory_growth_limit": 512,
+    "pipeline_seg_batch": 16,
+    "pipeline_track_batch": 64
+}
