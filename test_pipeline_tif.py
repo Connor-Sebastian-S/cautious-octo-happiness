@@ -18,13 +18,13 @@ def _root_dir():
 
 def test_pipeline_tif_stack():
 
+    # Load configuration:
+    utils.cfg.load_config(presets="2D", config_level="global", json_file='data/config_2D.json')
+    
     # 'Pretend' arguments were passed to the cmd line:
     sys.argv = [sys.argv[0]]
-    sys.argv.append(os.path.join(_root_dir(), "data/evaluation/beta"))
-    sys.argv.append(os.path.join(_root_dir(), "data/evaluation/beta/results"))
-
-    # Load configuration:
-    utils.cfg.load_config(presets="2D", config_level="global", json_file='././data/config_2D.json')
+    sys.argv.append(os.path.join(_root_dir(), cfg.project_dir))
+    sys.argv.append(os.path.join(_root_dir(), cfg.res_dir))
 
     # Init reader
     xpreader = utils.xpreader()
@@ -78,9 +78,7 @@ def build_plot(
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.set_prop_cycle('color', [scalarMap.to_rgba(i) for i in range(NUM_COLORS)])
-    
-    
-    
+
     for count, cell in enumerate(lineage.cells):
         
         ax.plot(
@@ -108,7 +106,7 @@ def pipeline_analysis():
         )
     
     pos.load('data/evaluation/alpha/results/Position000000.pkl')
-    
+        
 # =============================================================================
 #     build_plot(pos=pos, 
 #                x=('frames'), 
@@ -117,6 +115,8 @@ def pipeline_analysis():
 #                y_label=('fluo (mean)')
 #                )
 # =============================================================================
-    
-test_pipeline_tif_stack()
+   
+import tensorflow as tf
+with tf.device('/cpu:0'): 
+    test_pipeline_tif_stack()
 #pipeline_analysis()

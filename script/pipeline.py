@@ -206,6 +206,10 @@ class Pipeline:
             features = tuple(features_list)
             
         #self.reader._msg(features_list)
+        
+        
+
+        
 
         # Run through positions:
         for p in positions:
@@ -232,6 +236,7 @@ class Pipeline:
                 save_format=self.save_format,
             )
             self.positions[p].clear()
+
 
     def run(self):
         """
@@ -724,10 +729,10 @@ class Position:
             self._msg("saved to pickle format\n%s" % filename + ".pkl")
 
         if "movie" in save_format:
-            self._msg("Saving results movie\n%s" % filename + ".mp4")
+            self._msg("Saving results images")
             movie = self.results_movie(frames=frames)
-            utils.vidwrite(movie, filename + ".mp4", verbose=False)
-            self._msg("Saved results movie\n%s" % filename + ".mp4")
+            #utils.vidwrite(movie, filename + ".mp4", verbose=False)
+            self._msg("Saved results images")
 
     def load(self, filename: str):
         """
@@ -921,17 +926,22 @@ class Position:
 
             # RGB-ify:
             frame = np.repeat(frame[:, :, np.newaxis], 3, axis=-1)
-
-            # Add frame number text:
-            frame = cv2.putText(
-                frame,
-                text="frame %06d" % (fnb,),
-                org=(int(frame.shape[0] * 0.05), int(frame.shape[0] * 0.97)),
-                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                fontScale=1,
-                color=(1, 1, 1, 1),
-                thickness=2,
-            )
+            
+            frame_no = fnb+1
+            
+            f_cell = f_default = f_seg = f_contours = frame
+            
+            poles_frame = trans_frames[f]
+            poles_frame = np.repeat(poles_frame[:, :, np.newaxis], 3, axis=-1)
+            
+            cellId_frame = trans_frames[f]
+            cellId_frame = np.repeat(cellId_frame[:, :, np.newaxis], 3, axis=-1)
+            
+            frameId_frame = trans_frames[f]
+            frameId_frame = np.repeat(frameId_frame[:, :, np.newaxis], 3, axis=-1)
+            
+            frameCellCount_frame = trans_frames[f]
+            frameCellCount_frame = np.repeat(frameCellCount_frame[:, :, np.newaxis], 3, axis=-1)
 
             for r, roi in enumerate(self.rois):
 
@@ -947,24 +957,118 @@ class Position:
                 else:
                     xtl, ytl = (roi.box["xtl"], roi.box["ytl"])
 
+                from pathlib import Path
+                
+                frame_save_directory = Path(Path.joinpath(Path(cfg.res_dir), 'frames', str(self.position_nb+1)))
+                if not Path(frame_save_directory).is_dir():
+                    p = Path(frame_save_directory) 
+                    p.mkdir(parents=True, exist_ok=True)
+                    
+                cell_save_directory = Path(Path.joinpath(Path(cfg.res_dir), 'cells', str(self.position_nb+1)))
+
+                if not Path(cell_save_directory).is_dir():
+                    p = Path(cell_save_directory) 
+                    p.mkdir(parents=True, exist_ok=True)
+                
+                frame_path = str(Path(Path.joinpath(Path(frame_save_directory, "frame" + str(frame_no) + "_mask.jpg"))))
+                f_seg = roi.seg_stack[0]
+                cv2.imwrite(frame_path, f_seg*255)
+                
+                frame_path = str(Path(Path.joinpath(Path(frame_save_directory, "frame" + str(frame_no) + "_default.jpg"))))
+                cv2.imwrite(frame_path, f_default*255)
+            
+
+                cell_count = len(cells)
+                ################
+                hhhh, wwww, cccc = frameCellCount_frame.shape
+                frameCellCount_frame = 255 * np.ones(shape=(hhhh, wwww, cccc), dtype=np.uint8)
+                # Add cell count text:
+                frameCellCount_frame = cv2.putText(
+                    frameCellCount_frame,
+                    text="cells in frame %06d" % (cell_count,),
+                    org=(int(frameCellCount_frame.shape[0] * 0.05), int(frameCellCount_frame.shape[0] * 0.97)),
+                    fontFace=cv2.FONT_HERSHEY_PLAIN,
+                    fontScale=1,
+                    color=(1, 1, 1, 1),
+                    thickness=2,
+                )
+                
+                frame_path = str(Path(Path.joinpath(Path(frame_save_directory, "frame" + str(frame_no) + "_cell_count.jpg"))))
+                cv2.imwrite(frame_path, frameCellCount_frame*255)
+                ################
+                
+                hh, ww, cc = cellId_frame.shape
+                cellId_frame = 255 * np.ones(shape=(hh, ww, cc), dtype=np.uint8)
+                
                 # Run through cells in labelled frame:
                 for c, cell in enumerate(cells):
 
+                    x,y,w,h = cv2.boundingRect(contours[c])
+
+                    ################
+                    frame_path = str(Path(Path.joinpath(Path(cell_save_directory, "frame" + str(frame_no) + "_cell" + str(c) + ".jpg"))))
+                    f_cell = f_default[y:y+h, x:x+w]
+                    cv2.imwrite(frame_path, f_cell*255)
+                    
+                    # Add cell number text:
+                    cellId_frame = cv2.putText(
+                        cellId_frame,
+                        text='%d' % (c),
+                        org=(x, y),
+                        fontFace=cv2.FONT_HERSHEY_PLAIN,
+                        fontScale=1,
+                        color=(1, 1, 1, 1),
+                        thickness=1,
+                    )
+                    
+                    frame_path = str(Path(Path.joinpath(Path(frame_save_directory, "frame" + str(frame_no) + "_cell_id.jpg"))))
+                    cv2.imwrite(frame_path, cellId_frame*255)
+                    ################
+                    
+                    ################
+                    hhh, www, ccc = frameId_frame.shape
+                    frameId_frame = 255 * np.ones(shape=(hhh, www, ccc), dtype=np.uint8)
+                    # Add frame number text:
+                    frameId_frame = cv2.putText(
+                        frameId_frame,
+                        text="frame %06d" % (fnb,),
+                        org=(int(frameId_frame.shape[0] * 0.05), int(frameId_frame.shape[0] * 0.97)),
+                        fontFace=cv2.FONT_HERSHEY_PLAIN,
+                        fontScale=1,
+                        color=(1, 1, 1, 1),
+                        thickness=2,
+                    )
+                    
+                    frame_path = str(Path(Path.joinpath(Path(frame_save_directory, "frame" + str(frame_no) + "_frame_count.jpg"))))
+                    cv2.imwrite(frame_path, frameId_frame*255)
+                    ################
+
+                    # Images after here have their cell contours drawn
+
                     # Draw contours:
-                    frame = cv2.drawContours(
-                        frame,
+                    f_contours = cv2.drawContours(
+                        f_contours,
                         contours,
                         c,
                         color=colors[cell],
                         thickness=1,
-                        offset=(xtl, ytl),
-                    )
+                        offset=(xtl,ytl)
+                        )
+                
+                    #x,y,w,h = cv2.boundingRect(contours[c])
+
+                    frame_path = str(Path(Path.joinpath(Path(cell_save_directory, "frame" + str(frame_no) + "_cell" + str(c) +"_contour.jpg"))))
+                    f_seg_cell = f_contours[y:y+h, x:x+w]
+                    cv2.imwrite(frame_path, f_seg_cell*255)
+                    
+                    frame_path = str(Path(Path.joinpath(Path(frame_save_directory, "frame" + str(frame_no) + "_contours.jpg"))))
+                    cv2.imwrite(frame_path, f_contours*255)
 
                     # Draw poles:
                     oldpole = roi.lineage.getvalue(cell, fnb, "old_pole")
                     assert isinstance(oldpole, np.ndarray)  # for mypy
-                    frame = cv2.drawMarker(
-                        frame,
+                    poles_frame = cv2.drawMarker(
+                        poles_frame,
                         (oldpole[1] + xtl, oldpole[0] + ytl),
                         color=colors[cell],
                         markerType=cv2.MARKER_TILTED_CROSS,
@@ -978,10 +1082,10 @@ class Position:
 
                     if daughter is None and (bornago > 0 or mother is None):
                         newpole = roi.lineage.getvalue(cell, fnb, "new_pole")
-                        frame = cv2.drawMarker(
-                            frame,
+                        poles_frame = cv2.drawMarker(
+                            poles_frame,
                             (newpole[1] + xtl, newpole[0] + ytl),
-                            color=[1, 1, 1],
+                            color=colors[cell],
                             markerType=cv2.MARKER_TILTED_CROSS,
                             markerSize=3,
                             thickness=1,
@@ -993,179 +1097,23 @@ class Position:
                         newpole = roi.lineage.getvalue(cell, fnb, "new_pole")
                         daupole = roi.lineage.getvalue(daughter, fnb, "new_pole")
                         # Plot arrow:
-                        frame = cv2.arrowedLine(
-                            frame,
+                        poles_frame = cv2.arrowedLine(
+                            poles_frame,
                             (newpole[1] + xtl, newpole[0] + ytl),
                             (daupole[1] + xtl, daupole[0] + ytl),
-                            color=(1, 1, 1),
+                            color=colors[cell],
                             thickness=1,
                         )
-
+                        
+                    frame_path = str(Path(Path.joinpath(Path(frame_save_directory, "frame" + str(frame_no) + "_poles.jpg"))))
+                    cv2.imwrite(frame_path, poles_frame*255)
+                    
+                    frame = f_contours
+                    
             # Add to movie array:
             movie += [(frame * 255).astype(np.uint8)]
 
         return movie
-    
-# =============================================================================
-#     def results_frames(self, frames: List[int] = None) -> Any:
-#         '''
-#         Generate movie illustrating segmentation and tracking
-#     
-#         Parameters
-#         ----------
-#         position : pipeline.Position object
-#             Position object to save data for.
-#         frames : list of int or None, optional
-#             Frames to generate the movie for. If None, all frames are run. 
-#             The default is None.
-#     
-#         Returns
-#         -------
-#         movie : TYPE
-#             DESCRIPTION.
-#     
-#         '''
-#     
-#         # Re-read trans frames:
-#         trans_frames = self.position.reader.getframes(
-#             positions=self.position.position_nb,
-#             channels=0,
-#             frames=frames,
-#             rescale=(0, 1),
-#             squeeze_dimensions=False,
-#             rotate=self.position.rotate
-#             )
-#         trans_frames = trans_frames[0,:,0]
-#         if self.position.drift_correction:
-#             trans_frames, _ = utils.driftcorr(
-#                 trans_frames, drift=self.position.drift_values
-#                 )
-#         movie = []
-#         
-#         # Run through frames, compile movie:
-#         for f, fnb in enumerate(frames):
-#             
-#             frame = trans_frames[f]
-#             
-#             #RGB-ify:
-#             frame = np.repeat(frame[:,:,np.newaxis],3,axis=-1)
-#     
-#             
-#             cell_count = len(self.position.all_cells[f])
-#             frame_no = fnb+1
-# 
-#             
-#             for r, roi in enumerate(self.position.rois):
-#                     # Get chamber-specific variables:
-#                     colors = utils.getrandomcolors(len(roi.lineage.cells), seed=r)
-#                     cells, contours = utils.getcellsinframe(
-#                         roi.label_stack[fnb],
-#                         return_contours=True
-#                         )
-#     
-#                     if roi.box is None:
-#                         xtl, ytl = (0, 0)
-#                     else:
-#                         xtl, ytl = (roi.box['xtl'], roi.box['ytl'])
-#                           
-#                     # Run through cells in labelled frame:
-#                     for c, cell in enumerate(cells):
-#                         
-#                         x,y,w,h = cv2.boundingRect(contours[c])
-#                         save_directory = os.path.join(save_path, 'results', 'cells', str(self.position.position_nb))
-#                         if not os.path.exists(save_directory):
-#                             os.makedirs(save_directory)
-#                         img_n = os.path.join(save_directory, "_frame" + str(frame_no) + "_cell" + str(c) + ".jpg")
-#                         t_roi = frame[y:y+h, x:x+w]
-#                         cv2.imwrite(img_n, t_roi*255)
-#                         
-#                         if position.reader.args[0] == True:# or cfg.save_with_contours == True:
-#                             # Draw contours:
-#                             frame = cv2.drawContours(
-#                                 frame,
-#                                 contours,
-#                                 c,
-#                                 color=colors[cell],
-#                                 thickness=cfg.outline_scale,
-#                                 offset=(xtl,ytl)
-#                                 )
-#                         
-#                             x,y,w,h = cv2.boundingRect(contours[c])
-#                             
-#                             save_directory = os.path.join(save_path, 'results', 'cells', str(position.position_nb))
-#                             if not os.path.exists(save_directory):
-#                                 os.makedirs(save_directory)
-#                             img_n = os.path.join(save_directory, "_frame" + str(frame_no) + "_cell" + str(c) + "_contour" + ".jpg")
-#                             t_roi = frame[y:y+h, x:x+w]
-#                             cv2.imwrite(img_n, t_roi*255)
-#                         
-#                         daughter = roi.lineage.getvalue(cell,fnb,'daughters')
-#                         bornago = roi.lineage.cells[cell]['frames'].index(fnb)
-#                         mother = roi.lineage.cells[cell]['mother']
-#                             
-#                         # Draw poles:
-#                         if position.reader.args[11] == True:# or cfg.save_with_poles == True:
-#                             oldpole = roi.lineage.getvalue(cell,fnb,'old_pole')
-#                             frame = cv2.drawMarker(
-#                                 frame, 
-#                                 (oldpole[1]+xtl,oldpole[0]+ytl),
-#                                 color=colors[cell],
-#                                 markerType=cv2.MARKER_TILTED_CROSS,
-#                                 markerSize=cfg.marker_scale,
-#                                 thickness=1
-#                                 )
-#                             
-#     
-#                             
-#                             if daughter is None and (bornago>0 or mother is None):
-#                                 newpole = roi.lineage.getvalue(cell,fnb,'new_pole')
-#                                 frame = cv2.drawMarker(
-#                                     frame,
-#                                     (newpole[1]+xtl,newpole[0]+ytl),
-#                                     color=cfg.marker_colour, 
-#                                     markerType=cv2.MARKER_TILTED_CROSS,
-#                                     markerSize=cfg.marker_scale,
-#                                     thickness=1
-#                                     )
-#                         
-#                         # Plot division arrow:
-#                         if daughter is not None:
-#                             if position.reader.args[1] == True:# or cfg.save_with_arrows == True:
-#                                 newpole = roi.lineage.getvalue(cell,fnb,'new_pole')
-#                                 daupole = roi.lineage.getvalue(daughter,fnb,'new_pole')
-#                                 # Plot arrow:
-#                                 frame = cv2.arrowedLine(
-#                                     frame,
-#                                     (newpole[1]+xtl,newpole[0]+ytl),
-#                                     (daupole[1]+xtl,daupole[0]+ytl),
-#                                     color=cfg.arrow_colour,
-#                                     thickness=cfg.arrow_scale
-#                                     )
-#                                 
-#                         if position.reader.args[4] == True :#or cfg.save_with_cell_numbers == True:
-#                             frame = cv2.putText(
-#                                 frame,
-#                                 text='%d' % (c),
-#                                 org=(x, y),
-#                                 fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-#                                 fontScale=1,
-#                                 color=cfg.label_colour,
-#                                 thickness=1
-#                                 )
-#             
-#             # Add to movie array:         
-#             #save_directory = os.path.join(cfg.projects_dir, cfg.project_name, 'results', 'frames', str(position.position_nb))
-#             save_directory = os.path.join(save_path, 'results', 'frames', str(position.position_nb))
-#             if not os.path.exists(save_directory):
-#                 os.makedirs(save_directory)
-#             #print(os.path.join(save_directory,str(position.position_nb) + "_frame" + str(frame_no) + ".jpg"))        
-#             cv2.imwrite(os.path.join(save_directory, "_frame" + str(frame_no) + ".jpg"), frame*255)
-#             
-#             movie+= [(frame*255).astype(np.uint8)]
-#     
-#         return movie
-# =============================================================================
-
 
 def load_position(filename: str) -> Position:
     """

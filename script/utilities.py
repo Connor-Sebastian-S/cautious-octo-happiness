@@ -612,7 +612,7 @@ def find_contours(mask: npt.NDArray[np.uint8]) -> List[Contour]:
     # Default use:
     #contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    _, contours, _= cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     # Some versions of cv2.findcontours return it as a tuple, not a list:
     contours = list(contours)
@@ -2244,6 +2244,7 @@ def vidwrite(
 
     """
 
+        
     # Initialize ffmpeg parameters:
     height, width, _ = images[0].shape
     if height % 2 == 1:
@@ -2268,7 +2269,7 @@ def vidwrite(
     )
 
     # Write frames:
-    for frame in images:
+    for frame in images:       
         process.stdin.write(frame[:height, :width].astype(np.uint8).tobytes())
 
     # Close file stream:
@@ -2325,14 +2326,6 @@ def roi_features(
     # Loop through cells in image, extract single-cell features:
     cell_features = []
     for cell, contour in zip(cell_nbs, contours):
-        
-        image = np.array(labels_frame).astype(int)
-        print(image)
-        p = Path.cwd().joinpath(Path('t.jpg'))
-        print(str(p))
-        cv2.imwrite(
-            str(p), 
-            image)
 
         # Append to features list:
         cell_features += [
@@ -2408,8 +2401,6 @@ def singlecell_features(
 
     if "perimeter" in features:
         features_dict["perimeter"] = cell_perimeter(contour)
-
-    
 
     # Fluo features:
     fluo_features = [x for x in features if x[0:4] == "fluo"]

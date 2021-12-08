@@ -7,6 +7,7 @@ import time
 import os
 
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
+import tensorflow as tf
 
 from script.utilities import cfg
 from script.model import unet_seg
@@ -40,12 +41,13 @@ cfg.load_config(presets="2D", config_level="global", json_file=config_location)
 
 # Files:
 training_set = cfg.training_set_seg
+print(training_set)
 savefile = "unet_seg.hdf5" #cfg.model_file_seg
- 
+
 # Training parameters:
 batch_size = 1
 epochs = 600
-steps_per_epoch = 300
+steps_per_epoch = 10
 patience = 50
 
 # Data generator parameters:
