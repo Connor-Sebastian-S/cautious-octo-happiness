@@ -70,7 +70,7 @@ The only difference between one and the other is the "Channel01" in the brightfi
 
 Note that fluorescence images are **not** necessary for the application to function. 
 
-When the images are loaded, the cells of interest are segmented in the brightfield image (Position01Channel01Frames000001.jpg) and this "mask" is used to determine where the cell is that frames corresponding fluorescence frame.
+When the images are loaded, the cells of interest are segmented in the brightfield image (Position01Channel01Frames000001.jpg) and this "mask" is used to determine where the cell is in that frame's corresponding fluorescence frame.
 
 Filenames must follow this pattern: **Position01Channel01Frames000001**.
 - Incrementing **Channel01** implies an additional fluorescence channel.
