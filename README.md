@@ -66,14 +66,23 @@ Training is split into two parts for each of the respective U-Net implementation
 For the tracking part, the structure of the training sets is:
 
 'previmg' folder: Images from the previous time point/frame, i.e. the time from which we want to predict movement/tracking from. These are named as 'Sample00000x.png'.
+
 'seg' folder: Segmentation mages from the previous time point/frame for a single cell, i.e. the time from which we want to predict movement/tracking from.  These have been generated using iLastik. These are named as 'Sample00000x.png' and must match their corresponding image in the 'previmg' folder.
+
 'img' folder: Images from the current time point/frame, i.e. the time from which we want to predict movement/tracking for. These are named as 'Sample00000x.png'.
+
 'segall' folder: Segmentation images from the current time point/frame for all cell, i.e. the time from which we want to predict movement/tracking for.  These have been generated using iLastik. These are named as 'Sample00000x.png' and must match their corresponding image in the 'img' folder.
+
 'mot-dau' folder: Tracking maps. Outlines the tracking of the ‘seed’ cell into the current time point, or if it divided, of both cells that resulted from the division. A script will be made available soon to generate these from the relevant 'seg' folder segmentation images. 
+
 'wei' folder: Pixel-wise weight maps. These images are optional, though highly recommended to ensure accurate segmentation of cells located next to one another. These are used to help calculate the loss in regions of the image and to force U-Net to focus on these regions \textemdash in a sense it punishes U-Net for ignoring these regions. These are generated from the 'segall' and 'mot\_dau' folder images with tracking\_weights() function located in the 'data.py' script.  These are named as 'Sample00000x.png' and must match their corresponding image in the 'img' folder.
+
 
 And for the segmentation part, the structure of the training sets is:
 
 'img' folder: Microscopy images, typically these will be phase-contrast images however bright-field or fluorescence images can be used \textemdash or indeed any combination of these. These are named as 'Sample00000x.png'.
+
 'seg' folder: Ground-truth images showing the segmentation of individual cells of interest. These have been generated using iLastik. These are named as 'Sample00000x.png' and must match their corresponding image in the 'img' folder.
+
 'wei' folder: Pixel-wise weight maps. These images are optional, though highly recommended to ensure accurate segmentation of cells located next to one another. These are used to help calculate the loss in regions of the image and to force U-Net to focus on these regions \textemdash in a sense it punishes U-Net for ignoring these regions. These are generated from the segmentation images using the 'seg\_weights\_2D()' function located in the 'data.py' script.  These are named as 'Sample00000x.png' and must match their corresponding image in the 'img' folder.
+
