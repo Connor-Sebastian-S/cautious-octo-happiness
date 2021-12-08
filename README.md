@@ -2,6 +2,8 @@
 
 Temporary ReadMe until I can be bothered to write a proper one.
 
+This thing uses the U-Net architecture for each of the stages in its pipeline. U-Net is a convolutional neural network (CNN) developed for the purposes of biomedical image segmentation. Characterised by its "U"-shaped network architecture, U-Net has demonstrated itself as the state-of-the-art convolutional neural network for biomedical imaging applications. U-Nets' "U" shaped architecture is such that successive convolutional layers are progressively down-sampled in the contraction path, where spatial information is reduced and feature information is increased, whereas the expansive path combines both this feature and spatial information - each convolution is followed by a rectified linear unit (ReLU) and a max pooling operation.
+
 If you wish to setup an environment to run this application I recommend installing Anaconda, and then importing the PhD_env.yml file as a new environment.
 
 Once that is done the application should be capable of running.
@@ -55,3 +57,23 @@ Ensure that "res_dir" and "project_dir" are coreectly setup in the config_2D.jso
 Run test_pipeline_tif.py, results are saved to the location defined by "res_dir".
 
 I would recommend running the script without making any changes to the config file or the contents of the default test folder, just to ensure everything is setup correctly.
+
+Training image file structure
+
+Training image file structure
+Training is split into two parts for each of the respective U-Net implementations : segmentation and tracking. Each part requires specific images to be generated, the requirements for these are detailed below.
+
+For the tracking part, the structure of the training sets is:
+
+'previmg' folder: Images from the previous time point/frame, i.e. the time from which we want to predict movement/tracking from. These are named as 'Sample00000x.png'.
+'seg' folder: Segmentation mages from the previous time point/frame for a single cell, i.e. the time from which we want to predict movement/tracking from.  These have been generated using iLastik. These are named as 'Sample00000x.png' and must match their corresponding image in the 'previmg' folder.
+'img' folder: Images from the current time point/frame, i.e. the time from which we want to predict movement/tracking for. These are named as 'Sample00000x.png'.
+'segall' folder: Segmentation images from the current time point/frame for all cell, i.e. the time from which we want to predict movement/tracking for.  These have been generated using iLastik. These are named as 'Sample00000x.png' and must match their corresponding image in the 'img' folder.
+'mot-dau' folder: Tracking maps. Outlines the tracking of the ‘seed’ cell into the current time point, or if it divided, of both cells that resulted from the division. A script will be made available soon to generate these from the relevant 'seg' folder segmentation images. 
+'wei' folder: Pixel-wise weight maps. These images are optional, though highly recommended to ensure accurate segmentation of cells located next to one another. These are used to help calculate the loss in regions of the image and to force U-Net to focus on these regions \textemdash in a sense it punishes U-Net for ignoring these regions. These are generated from the 'segall' and 'mot\_dau' folder images with tracking\_weights() function located in the 'data.py' script.  These are named as 'Sample00000x.png' and must match their corresponding image in the 'img' folder.
+
+And for the segmentation part, the structure of the training sets is:
+
+'img' folder: Microscopy images, typically these will be phase-contrast images however bright-field or fluorescence images can be used \textemdash or indeed any combination of these. These are named as 'Sample00000x.png'.
+'seg' folder: Ground-truth images showing the segmentation of individual cells of interest. These have been generated using iLastik. These are named as 'Sample00000x.png' and must match their corresponding image in the 'img' folder.
+'wei' folder: Pixel-wise weight maps. These images are optional, though highly recommended to ensure accurate segmentation of cells located next to one another. These are used to help calculate the loss in regions of the image and to force U-Net to focus on these regions \textemdash in a sense it punishes U-Net for ignoring these regions. These are generated from the segmentation images using the 'seg\_weights\_2D()' function located in the 'data.py' script.  These are named as 'Sample00000x.png' and must match their corresponding image in the 'img' folder.
