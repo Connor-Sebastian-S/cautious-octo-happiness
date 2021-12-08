@@ -1627,9 +1627,6 @@ class xpreader:
             if len(cmdln_arguments) >= 2:
                 # If command line arguments were passed
                 self._command_line_init(cmdln_arguments)
-            else:
-                # Interactive selection and pop up window:
-                self._interactive_init()
 
         self.channelnames = channelnames
         "Names of the imaging channels (optional)"
@@ -1665,7 +1662,7 @@ class xpreader:
                 imgfiles = [
                     x
                     for x in os.listdir(self.filename)
-                    if os.path.splitext(x)[1].lower() in (".tif", ".tiff", '.png', '.jpg', '.jpeg')
+                    if os.path.splitext(x)[1].lower() in ('.tif', '.tiff', '.png', '.jpg', '.jpeg')
                 ]
                 # Here we assume all images in the folder follow the same naming convention:
                 numstrs = re.findall(
@@ -1800,79 +1797,6 @@ class xpreader:
             if cmdln_arguments[i] == "--proto":
                 self.prototype = cmdln_arguments[i + 1]
                 i += 2
-
-    def _interactive_init(self) -> None:
-        """
-        Interactive initialization routine.
-
-        Raises
-        ------
-        ValueError
-            If a non-valid experiment type was passed.
-
-        Returns
-        -------
-        None.
-
-        """
-
-        # Get xp settings:
-        print(
-            (
-                "Experiment type?\n"
-                "1 - Bio-Formats compatible (.nd2, .oib, .czi, .ome.tif...)\n"
-                "2 - bioformats2sequence (folder)\n"
-                "3 - micromanager (folder)\n"
-                "4 - high-throughput (folder)\n"
-                "0 - other (folder)\n"
-                "Enter a number: "
-            ),
-            end="",
-        )
-        answer = int(input())
-        print()
-
-        # If bioformats file(s):
-        if answer is None or answer == 1:
-            print("Please select experiment file(s)...")
-            self.filename = getxppathdialog(ask_folder=False)
-            self.use_bioformats = True
-            self.prototype = None
-            self.filenamesindexing = 1
-            self.fileorder = "pct"
-
-        # If folder:
-        else:
-            print("Please select experiment folder...")
-            self.filename = getxppathdialog(ask_folder=True)
-            self.use_bioformats = False
-            if answer is None or answer == 2:
-                self.prototype = None
-                self.fileorder = "pct"
-                self.filenamesindexing = 1
-            elif answer == 3:
-                self.prototype = (
-                    "Pos%01d/img_channel%03d_position%03d_time%09d_z000.tif"
-                )
-                self.fileorder = "pcpt"
-                self.filenamesindexing = 0
-            elif answer == 4:
-                self.prototype = "chan%02d_img/Position%06d_Frame%06d.tif"
-                self.fileorder = "cpt"
-                self.filenamesindexing = 1
-            elif answer == 0:
-                print("Enter files prototype: ", end="")
-                self.prototype = input()
-                print()
-                print("Enter files order: ", end="")
-                self.fileorder = input()
-                print()
-                print("Enter files indexing: ", end="")
-                self.filenamesindexing = int(input())
-                print()
-            else:
-                raise ValueError("Invalid experiment type")
-            print()
 
     def close(self) -> None:
         # Close bioformats or tif reader
