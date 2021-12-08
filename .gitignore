@@ -1,7 +1,9 @@
-data/evaluation
+data/evaluation/alpha
 data/models
 data/movie_nd2
 data/movie_tif
 data/template
 data/test
 data/training
+tests/
+train_rois.py

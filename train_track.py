@@ -1,7 +1,6 @@
 """
 This script trains the tracking U-Net.
 
-@author: jblugagne
 """
 import os
 

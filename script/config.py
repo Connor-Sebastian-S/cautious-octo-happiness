@@ -10,7 +10,6 @@ from typing import Tuple, Optional
 
 from . import __file__ as _delta_init  # Path to __init__ file
 
-_DELTA_DIR = _os.path.dirname(_delta_init)
 "install directory"
 _LOADED = None
 "Which config file was loaded"
@@ -79,15 +78,15 @@ _DEFAULTS_2D = dict(
     presets="2D",  # Type of analysis. Can be '2D' or your own custom name for presets
     models=("segmentation", "tracking"),  # Which models will be run
     model_file_rois="",  # Model file for ROIs segmentation (None for 2D)
-    model_file_seg="D:/DeLTA_data/agar_pads/unet_pads_seg.hdf5",  # Model file for cell segmentation (placeholder)
-    model_file_track="D:/DeLTA_data/agar_pads/unet_pads_track.hdf5",  # Model file for cell tracking(placeholder)
+    model_file_seg="data/models/unet_agarpads_seg_optimized.hdf5",  # Model file for cell segmentation (placeholder)
+    model_file_track="data/models/unet_agarpads_track_optimized.hdf5",  # Model file for cell tracking(placeholder)
     target_size_rois=(512, 512),  # ROI U-Net target/input image size
     target_size_seg=(512, 512),  # segmentation U-Net target/input image size
     target_size_track=(256, 256),  # tracking U-Net target/input image size
     training_set_rois="",  # Path to ROIs U-Net training set (None for 2D)
-    training_set_seg="D:/DeLTA_data/agar_pads/train/seg/",  # Path to segmentation training set (placeholder)
-    training_set_track="D:/DeLTA_data/agar_pads/train/track/",  # Path to tracking training set (placeholder)
-    eval_movie="D:/DeLTA_data/agar_pads/eval_movie/tifs/",  # Path to evaluation movie / image sequence
+    training_set_seg="data/training/segmentation_set/",  # Path to segmentation training set (placeholder)
+    training_set_track="data/training/segmentation_set/",  # Path to tracking training set (placeholder)
+    eval_movie="data\evaluation\beta",  # Path to evaluation movie / image sequence
     rotation_correction=False,  # Flag to try to automatically correct image rotation (for microfluidic devices)
     drift_correction=False,  # Flag to correct drift over time (for microfluidic devices / ROIs)
     crop_windows=True,  # Flag to crop input image into windows of size target_size_seg for segmentation, otherwise resize them
@@ -102,32 +101,6 @@ _DEFAULTS_2D = dict(
 )
 
 def load_config(json_file: str = None, presets: str = "2D", config_level: str = None):
-    """
-    Loads json configuration files
-
-    Parameters
-    ----------
-    json_file : str or None, optional
-        Path to json file containing configuration. If None, load_config will
-        search for local or global config files based on the presets value and
-        config_level.
-        The default is None.
-    presets : str, optional
-        If json_file is None, search for files named 'config_<presets>.json in
-        the local user folder under .delta and then if not found in the global
-        folder (ie the install folder).
-        The default is '2D'.
-    config_level : str or None, optional
-        If 'local', look for preset config file in the local user folder under
-        ~/.delta. If 'global', look in the delta install folder under
-        assets/config. If None, look under local first and then global.
-        The default is None.
-
-    Returns
-    -------
-    None.
-
-    """
 
     if presets == "2D":
         defaults = _DEFAULTS_2D
@@ -143,18 +116,13 @@ def load_config(json_file: str = None, presets: str = "2D", config_level: str = 
 
         # Is there a local/user config file for this preset?
         _json_file = _os.path.expanduser(
-            _os.path.join("~/.delta", "config_%s.json" % presets)
+            _os.path.join("~/data", "config_%s.json" % presets)
         )
         if _os.path.exists(_json_file) and (
             config_level is None or config_level == "local"
         ):
             json_file = _json_file
 
-        # Is there a global config file for this preset?
-        _os.path.join(_DELTA_DIR, "assets", "config")
-        _json_file = _os.path.join(
-            _DELTA_DIR, "assets", "config", "config_%s.json" % presets
-        )
         if (
             json_file is None
             and _os.path.exists(_json_file)

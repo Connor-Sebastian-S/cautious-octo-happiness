@@ -1,7 +1,6 @@
 """
-This script trains the chambers segmentation U-Net.
+This script trains the segmentation U-Net.
 
-@author: jblugagne
 """
 import os
 

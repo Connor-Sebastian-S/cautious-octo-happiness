@@ -92,9 +92,9 @@ class Pipeline:
         else:
             xpfile = self.reader.filename
             if os.path.isdir(xpfile):
-                self.resfolder = os.path.join(xpfile, "delta_results")
+                self.resfolder = os.path.join(xpfile, "results")
             else:
-                self.resfolder = os.path.splitext(xpfile)[0] + "_delta_results"
+                self.resfolder = os.path.splitext(xpfile)[0] + "results"
 
         if not os.path.exists(self.resfolder):
             os.mkdir(self.resfolder)
