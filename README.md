@@ -114,3 +114,27 @@ And for the segmentation part, the structure of the training sets is:
 
 - **'wei' folder:** Pixel-wise weight maps. These images are optional, though highly recommended to ensure accurate segmentation of cells located next to one another. These are used to help calculate the loss in regions of the image and to force U-Net to focus on these regions - in a sense it punishes U-Net for ignoring these regions. These are generated from the segmentation images using the 'seg\_weights\_2D()' function located in the 'data.py' script.  These are named as 'Sample00000x.png' and must match their corresponding image in the 'img' folder.
 
+## Sample output
+
+A number of different files are produced as a result of running the application.
+
+- **'.pkl file:** Python compatible data 
+- **'.mat file:** MATLAB compatible data 
+- **'frames folder:** Contains images of processed frames in various layouts
+- **'cells folder:** Contains segmented images of each cell in various layouts
+- 
+#### frame1_default.jpg
+
+![Example of output image showing default image](data/evaluation/beta/results/frames/1/frame1_default.jpg)
+
+#### frame1_mask.jpg
+
+![Example of output image showing segnentation mask](data/evaluation/beta/results/frames/1/frame1_mask.jpg)
+
+#### frame1_poles.jpg
+
+![Example of output image showing cell poles](data/evaluation/beta/results/frames/1/frame1_poles.jpg)
+
+#### frame1_contours.jpg
+
+![Example of output image showing cell contours](data/evaluation/beta/results/frames/1/frame1_contours.jpg)
