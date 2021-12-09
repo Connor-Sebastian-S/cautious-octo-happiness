@@ -122,7 +122,7 @@ A number of different files are produced as a result of running the application.
 - **'.mat file:** MATLAB compatible data 
 - **'frames folder:** Contains images of processed frames in various layouts
 - **'cells folder:** Contains segmented images of each cell in various layouts
-- 
+
 #### frame1_default.jpg
 
 ![Example of output image showing default image](data/evaluation/beta/results/frames/1/frame1_default.jpg)
