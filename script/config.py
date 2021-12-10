@@ -150,35 +150,13 @@ def load_config(json_file: str = None, presets: str = "2D", config_level: str = 
 
     # Tensorflow technical parameters:
     # Debugging messages level from Tensorflow ('0' = most verbose to '3' = not verbose)
-   # _os.environ["TF_CPP_MIN_LOG_LEVEL"] = TF_CPP_MIN_LOG_LEVEL
-    #_os.environ["CUDA_VISIBLE_DEVICES"] = ""
+    #_os.environ["TF_CPP_MIN_LOG_LEVEL"] = TF_CPP_MIN_LOG_LEVEL
+    import tensorflow as tf
 
-    # # If running into OOM issues or having trouble with cuDNN loading, try setting
-    # # memory_growth_limit to a value in MB: (eg 1024, 2048...)
-    # if memory_growth_limit is not None:
-    #     import tensorflow as tf
-    #     gpus =  tf.config.experimental.list_physical_devices ("GPU")
-    #     print("Adjusting GPU settings")
-    #     if gpus:
-    #         # Restrict TensorFlow to only allocate 1GB of memory on the first GPU
-    #         try:
-    #             print(gpus[0])
-    #             tf.config.experimental.set_virtual_device_configuration(
-    #                 gpus[0],
-    #                 [
-    #                     tf.config.experimental.VirtualDeviceConfiguration(
-    #                         memory_limit=memory_growth_limit
-    #                     ),
-    #                 ],
-    #             )
-    #         except RuntimeError as e:
-    #             # Virtual devices must be set before GPUs have been initialized
-    #             print(e)
-    
-    # import tensorflow as tf
-    # with tf.device('/cpu:0'):
-    #     my_devices = tf.config.experimental.list_physical_devices(device_type='CPU')
-    #     tf.config.experimental.set_visible_devices(devices= my_devices, device_type='CPU')
+    # Hide GPU from visible devices
+    tf.config.set_visible_devices([], 'GPU')
+    tf.config.threading.set_intra_op_parallelism_threads(2)
+
 
 def _read_json(json_file: str):
 
