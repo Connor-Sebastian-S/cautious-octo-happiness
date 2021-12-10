@@ -721,10 +721,19 @@ class Position:
 
         if "pickle" in save_format:
             self._msg("Saved to pickle format\n%s" % filename + ".pkl")
+            
             import pickle
+            import job_tasks as job
+            from pathlib import Path
 
             with open(filename + ".pkl", "wb") as file:
                 pickle.dump(self, file)
+                
+            loc = str(Path.joinpath(Path().resolve(), job._root_dir(), cfg.project_dir, cfg.res_dir, filename + ".pkl"))
+            
+            #print(filename)
+            #print(loc)
+            job.data_transfer(loc)
                 
             self._msg("saved to pickle format\n%s" % filename + ".pkl")
 

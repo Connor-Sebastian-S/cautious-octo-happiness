@@ -32,7 +32,6 @@ import os
 import sys
 from pathlib import Path
 
-import schedule
 from github import Github
 
 import script.utilities as utils
@@ -212,7 +211,7 @@ def create_experiment():
             json_file='data/config_2D.json'
             )
         
-        # Check that the project directory doesn'texists
+        # Check that the project directory doesn't exist
         try:
             Path.joinpath(Path().resolve(), _root_dir(), cfg.project_dir).resolve(strict = True)
         except FileNotFoundError:
@@ -222,7 +221,35 @@ def create_experiment():
         else:
             _msg("Project directory files located")
  
-# NOT FINISHED, NEED TO KNOW HOW THE IMAGES ARE CAPTURED/SAVED FIRST
+def integrity_check():
+    """
+    Check images are correctly formatted, that the folder structure is correct, 
+    and that all necessary scripts and hardware are functioning.
+    
+    Parameters
+    ----------
+    None.
+    
+    Returns
+    -------
+    None.
+    
+    """  
+        
+def capture_images():
+    """
+    Captures our images. Nothing more.
+    
+    Parameters
+    ----------
+    None.
+    
+    Returns
+    -------
+    None.
+    
+    """  
+    
 def format_images():
     """
     Converts images in a folder to jpeg for performance reasons in the pipeline.
@@ -263,7 +290,8 @@ def data_transfer(pickle_file: str):
     
     Parameters
     ----------
-    None.
+    string : str
+1993        Directory path to pickle file.
     
     Returns
     -------
@@ -271,40 +299,32 @@ def data_transfer(pickle_file: str):
     
     """ 
     
-    g = Github("username", "password")
+    # g = Github("username", "password")
     
-    repo = g.get_user().get_repo('my-repo')
-    all_files = []
-    contents = repo.get_contents("")
-    while contents:
-        file_content = contents.pop(0)
-        if file_content.type == "dir":
-            contents.extend(repo.get_contents(file_content.path))
-        else:
-            file = file_content
-            all_files.append(str(file).replace('ContentFile(path="','').replace('")',''))
+    # repo = g.get_user().get_repo('my-repo')
+    # all_files = []
+    # contents = repo.get_contents("")
+    # while contents:
+    #     file_content = contents.pop(0)
+    #     if file_content.type == "dir":
+    #         contents.extend(repo.get_contents(file_content.path))
+    #     else:
+    #         file = file_content
+    #         all_files.append(str(file).replace('ContentFile(path="','').replace('")',''))
     
-    with open(pickle_file, 'r') as file:
-        content = file.read()
+    # with open(pickle_file, 'r') as file:
+    #     content = file.read()
     
-    # Upload to github
-    git_prefix = 'folder1/'
-    git_file = git_prefix + 'file.txt'
-    if git_file in all_files:
-        contents = repo.get_contents(git_file)
-        repo.update_file(contents.path, "committing files", content, contents.sha, branch="master")
-        print(git_file + ' UPDATED')
-    else:
-        repo.create_file(git_file, "committing files", content, branch="master")
-        print(git_file + ' CREATED')
-        
+    # # Upload to github
+    # git_prefix = 'folder1/'
+    # git_file = git_prefix + 'file.txt'
+    # if git_file in all_files:
+    #     contents = repo.get_contents(git_file)
+    #     repo.update_file(contents.path, "committing files", content, contents.sha, branch="master")
+    #     print(git_file + ' UPDATED')
+    # else:
+    #     repo.create_file(git_file, "committing files", content, branch="master")
+    #     print(git_file + ' CREATED')
     
-# # Schedule the 'job() function every Friday at 14:00
-# schedule.every().friday.at("14:00").do(job)
-
-# # Schedule the 'job() function every Friday at 22:00
-# schedule.every().friday.at("22:00").do(job)
-
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)
+    print("wowee pickle has been moved somewhere")
+ 
