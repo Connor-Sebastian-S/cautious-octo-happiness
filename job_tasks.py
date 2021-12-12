@@ -218,7 +218,7 @@ def create_experiment():
         # Check that the project directory doesn't exist
 
         _msg("Project directory not located")
-        print(Path(Path.joinpath(Path().resolve(), _root_dir(), cfg.project_dir)))
+        
         Path(Path.joinpath(Path().resolve(), _root_dir(), cfg.project_dir)).mkdir(parents=True, exist_ok=True)
         Path(Path.joinpath(Path().resolve(), _root_dir(), cfg.res_dir)).mkdir(parents=True, exist_ok=True)
         _msg("Project directory created")
@@ -366,10 +366,8 @@ def image_similarity(img1: np.array, img2: np.array):
     else:
         return False
     
-def data_transfer(pickle_file: str):
+def data_transfer(pickle_file: str = None):
     """
-    Sends the Pickle file to a GitHub repo, why? Because I can. 
-    Not secure in any way but it's cool. 
     Should be called at the end of the pipeline when the pkl is created, this way
     we don't need to reload the config file or check that the pkl actually exists.
     
@@ -384,32 +382,9 @@ def data_transfer(pickle_file: str):
     
     """ 
     
-    # g = Github("username", "password")
-    
-    # repo = g.get_user().get_repo('my-repo')
-    # all_files = []
-    # contents = repo.get_contents("")
-    # while contents:
-    #     file_content = contents.pop(0)
-    #     if file_content.type == "dir":
-    #         contents.extend(repo.get_contents(file_content.path))
-    #     else:
-    #         file = file_content
-    #         all_files.append(str(file).replace('ContentFile(path="','').replace('")',''))
-    
-    # with open(pickle_file, 'r') as file:
-    #     content = file.read()
-    
-    # # Upload to github
-    # git_prefix = 'folder1/'
-    # git_file = git_prefix + 'file.txt'
-    # if git_file in all_files:
-    #     contents = repo.get_contents(git_file)
-    #     repo.update_file(contents.path, "committing files", content, contents.sha, branch="master")
-    #     print(git_file + ' UPDATED')
-    # else:
-    #     repo.create_file(git_file, "committing files", content, branch="master")
-    #     print(git_file + ' CREATED')
-    
-    print("wowee pickle has been moved somewhere")
+    if pickle_file != None:
+        loc = "here"
+        _msg("wowee pickle has been moved somewhere %s" % loc)
+    else:
+        _msg("shits broken somewhere!") 
  

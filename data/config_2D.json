@@ -1,7 +1,8 @@
 {
     "presets": "2D",
     "models": [
-        "segmentation"
+        "segmentation",
+        "tracking"
     ],
     "res_dir": "data/evaluation/beta/results",
     "project_dir": "data/evaluation/beta",

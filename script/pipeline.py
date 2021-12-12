@@ -170,6 +170,7 @@ class Pipeline:
         positions: List[int] = None,
         frames: List[int] = None,
         features: Tuple[str, ...] = None,
+        length: int = None
     ):
         """
         Run pipeline.
@@ -185,12 +186,16 @@ class Pipeline:
         features : list of str or None, optional
             List of features to extract. If None, all features are extracted.
             The default is None.
+        length: int
+            Number of frames
 
         Returns
         -------
         None.
 
         """
+        
+
 
         if frames is None:
             frames = [f for f in range(self.reader.timepoints)]
@@ -205,23 +210,24 @@ class Pipeline:
                 features_list += ["fluo%d" % (c,)]
             features = tuple(features_list)
             
-        #self.reader._msg(features_list)
+        #if self.reader.length > 1:
+            #self.models = ("segmentation")
         
         
-
-        
-
         # Run through positions:
         for p in positions:
-
+            
             # Preprocess is not done already:
             if not self.positions[p]._preprocessed:
                 self.positions[p].preprocess(
                     rotation_correction=self.rotation_correction
                 )
 
+
+
             # Segment all frames:
             self.positions[p].segment(frames=frames)
+            
 
             # Track cells:
             self.positions[p].track(frames=frames)
@@ -563,6 +569,7 @@ class Position:
         """
 
         self._msg("Starting tracking (%d frames)" % (len(frames),))
+        
 
         for f in frames:
 
@@ -735,7 +742,7 @@ class Position:
             #print(loc)
             job.data_transfer(loc)
                 
-            self._msg("saved to pickle format\n%s" % filename + ".pkl")
+            self._msg("Saved to pickle format\n%s" % filename + ".pkl")
 
         if "movie" in save_format:
             self._msg("Saving results images")

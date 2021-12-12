@@ -49,7 +49,7 @@ def process_everything():
 #     job.clean_image_folder()
     
 #     # Create new experiment folder
-      job.create_experiment
+      job.create_experiment()
 
 #     # Capture new images
       job.capture_images()

@@ -1619,6 +1619,8 @@ class xpreader:
         "Size of images along Y axis"
         self.dtype: str
         "Datatype of images"
+        self.length: int = 0
+        "Number of images"
 
         # Retrieve command line arguments (if any)
         cmdln_arguments = sys.argv
@@ -1633,6 +1635,8 @@ class xpreader:
         self.watchfiles = watchfiles
 
         _, file_extension = os.path.splitext(self.filename)
+        
+
 
         if self.use_bioformats:
             import bioformats
@@ -1655,8 +1659,16 @@ class xpreader:
         elif os.path.isdir(
             self.filename
         ):  # Experiment is stored as individual image TIFF files in a folder
+        
+            
+        
             self.filetype = "dir"
             self.filehandle = self.filename
+            
+            for x in os.listdir(self.filename): 
+                if os.path.splitext(x)[1].lower() in ('.tif', '.tiff', '.png', '.jpg', '.jpeg'):
+                    self.length += 1
+                
             # If filename prototype is not provided, guess it from the first file:
             if self.prototype is None:
                 imgfiles = [
@@ -1750,7 +1762,7 @@ class xpreader:
             self.x = s.shape[s.axes.find("X")]
             self.y = s.shape[s.axes.find("Y")]
             self.dtype = s.pages[0].asarray().dtype
-
+            
     def _command_line_init(self, cmdln_arguments: List[str]) -> None:
         """
         Initialization routine if command line arguments were passed
@@ -2090,7 +2102,7 @@ def loadmodels(toload: Tuple[str, ...] = None) -> Dict[str, Any]:
     """
 
     from .model import unet_rois, unet_seg, unet_track
-
+    
     if toload is None:
         toload = cfg.models
 
