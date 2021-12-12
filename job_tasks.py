@@ -31,9 +31,12 @@ import time
 import os
 import sys
 from pathlib import Path
+from shutil import copy2
 
 import numpy as np
 import cv2
+import glob
+from PIL import Image
 
 import script.utilities as utils
 import script.config as cfg
@@ -235,6 +238,14 @@ def integrity_check():
     None.
     
     """  
+    
+    # Check config file
+    
+    # Check folders
+    
+    # Check images
+    
+    # Check all scripts are present
         
 def capture_images():
     """
@@ -250,7 +261,7 @@ def capture_images():
     
     """  
     
-def format_images():
+def convert_images():
     """
     Converts images in a folder to jpeg for performance reasons in the pipeline.
     Ensures that the images all follow the same naming pattern, the order that 
@@ -280,6 +291,21 @@ def format_images():
             config_level="global", 
             json_file='data/config_2D.json'
             )
+        
+        # Get training image files list:
+        image_name_arr = glob.glob(os.path.join(cfg.project_dir, "*.*"))
+
+        # Load in the images
+        for n, filepath in enumerate(image_name_arr):
+            #images_input.append(cv2.imread(filepath))
+            #img1 = Image.open(filepath)
+            base = os.path.splitext(filepath)[0]
+            if base.lower() not in ('.jpg', '.jpeg'):
+                os.rename(filepath, base + '.jpeg')
+                
+                #img1.save(filepath)
+        
+    
 
 def image_similarity(img1: np.array, img2: np.array):
     """
