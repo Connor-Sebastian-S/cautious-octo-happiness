@@ -10,6 +10,8 @@ from typing import Tuple, Optional
 
 from . import __file__ as _delta_init  # Path to __init__ file
 
+evaluation_dir = 'data/evaluation/measure'
+
 "install directory"
 _LOADED = None
 "Which config file was loaded"
@@ -92,7 +94,7 @@ _DEFAULTS_2D = dict(
     crop_windows=True,  # Flag to crop input image into windows of size target_size_seg for segmentation, otherwise resize them
     min_roi_area=500,  # Minimum area of detected ROIs, in pixels. Can be set to 0. (N/A for 2D)
     whole_frame_drift=False,  # If correcting for drift, use the entire frame instead of the region above the chambers
-    min_cell_area=20,  # Minimum area of detected cells, in pixels. Can be set to 0
+    min_cell_area=5,  # Minimum area of detected cells, in pixels. Can be set to 0
     save_format=("pickle", "legacy", "movie"),  # Format to save output data to.
     TF_CPP_MIN_LOG_LEVEL="2",  # Debugging messages level from Tensorflow ('0' = most verbose to '3' = not verbose)
     memory_growth_limit=1024,  # If running into OOM issues or having trouble with cuDNN loading, try setting memory_growth_limit to a value in MB: (eg 1024, 2048...)
@@ -155,7 +157,7 @@ def load_config(json_file: str = None, presets: str = "2D", config_level: str = 
 
     # Hide GPU from visible devices
     tf.config.set_visible_devices([], 'GPU')
-    tf.config.threading.set_intra_op_parallelism_threads(2)
+    #tf.config.threading.set_intra_op_parallelism_threads(2)
 
 
 def _read_json(json_file: str):

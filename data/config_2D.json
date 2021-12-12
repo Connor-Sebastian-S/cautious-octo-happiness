@@ -28,7 +28,7 @@
     "crop_windows": true,
     "min_roi_area": 500,
     "whole_frame_drift": false,
-    "min_cell_area": 10,
+    "min_cell_area": 2,
     "save_format": [
         "pickle",
         "legacy",

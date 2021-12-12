@@ -32,7 +32,7 @@ import os
 import sys
 from pathlib import Path
 
-from github import Github
+#from github import Github
 
 import script.utilities as utils
 import script.config as cfg
@@ -281,6 +281,8 @@ def format_images():
             json_file='data/config_2D.json'
             )
 
+#def image_similarity():
+    
 def data_transfer(pickle_file: str):
     """
     Sends the Pickle file to a GitHub repo, why? Because I can. 

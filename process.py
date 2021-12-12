@@ -23,7 +23,7 @@ Done, and loop
 
 import time
 
-import schedule
+#import schedule
 
 import job_tasks as job
 
