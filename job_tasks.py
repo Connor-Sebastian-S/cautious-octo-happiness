@@ -32,7 +32,8 @@ import os
 import sys
 from pathlib import Path
 
-#from github import Github
+import numpy as np
+import cv2
 
 import script.utilities as utils
 import script.config as cfg
@@ -77,7 +78,7 @@ def remove_tree(path):
 
     Parameters
     ----------
-    string : str
+    path : str
         Directory path to remove.
 
     Returns
@@ -212,14 +213,13 @@ def create_experiment():
             )
         
         # Check that the project directory doesn't exist
-        try:
-            Path.joinpath(Path().resolve(), _root_dir(), cfg.project_dir).resolve(strict = True)
-        except FileNotFoundError:
-            _msg("Project directory not located")
-            Path(Path.joinpath(Path().resolve(), _root_dir(), cfg.project_dir)).mkdir(parents=True, exist_ok=True)
-            _msg("Project directory created")
-        else:
-            _msg("Project directory files located")
+
+        _msg("Project directory not located")
+        print(Path(Path.joinpath(Path().resolve(), _root_dir(), cfg.project_dir)))
+        Path(Path.joinpath(Path().resolve(), _root_dir(), cfg.project_dir)).mkdir(parents=True, exist_ok=True)
+        Path(Path.joinpath(Path().resolve(), _root_dir(), cfg.res_dir)).mkdir(parents=True, exist_ok=True)
+        _msg("Project directory created")
+
  
 def integrity_check():
     """
@@ -281,7 +281,64 @@ def format_images():
             json_file='data/config_2D.json'
             )
 
-#def image_similarity():
+def image_similarity(img1: np.array, img2: np.array):
+    """
+    Converts images in a folder to jpeg for performance reasons in the pipeline.
+    Ensures that the images all follow the same naming pattern, the order that 
+    they are ordered in is based on creation time.
+    
+    Parameters
+    ----------
+    img1 : np.array
+        Image 1 as numpy array
+    img2 : np.array
+        Image 2 as numpy array
+    
+    Returns
+    -------
+    is_same : boolean
+        Whether images are the same (above lower threshold t)
+    
+    """  
+    
+    # Check that the config file exists 
+    try:
+        Path.joinpath(Path().resolve(), 'data/config_2D.json').resolve(strict = True)
+    except FileNotFoundError:
+        _msg("Loaded config files not located")
+    else:
+        _msg("Loaded config files located")
+        
+        # Load configuration:
+        utils.cfg.load_config(
+            presets="2D", 
+            config_level="global", 
+            json_file='data/config_2D.json'
+            )
+    
+    # Convert image 1 and image 2 to appropriate colour scheme
+    #img1_grey = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+    #img2_grey = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+    
+    # Calculate the histogram and normalize it
+    img1_histogram = cv2.calcHist([img1], [0,1], None, [180,256], [0,180,0,256])
+    img1_histogram = cv2.normalize(img1_histogram, img1_histogram, alpha = 0, beta = 1, norm_type = cv2.NORM_MINMAX);
+    img2_histogram = cv2.calcHist([img2], [0,1], None, [180,256], [0,180,0,256])
+    img2_histogram = cv2.normalize(img2_histogram, img2_histogram, alpha = 0, beta = 1, norm_type = cv2.NORM_MINMAX);
+    
+    # Find the metric value - the higher the metric, the more accurate the match
+    metric_val = cv2.compareHist(img1_histogram, img2_histogram, cv2.HISTCMP_INTERSECT)
+    
+    # Our minimum accepted threshold
+    t = 1.3
+    print(metric_val)
+    _msg("Images have similarity metric of %f" % metric_val)
+    
+    # Check if metric_value is greater than our lower threshold
+    if metric_val > t:
+        return True
+    else:
+        return False
     
 def data_transfer(pickle_file: str):
     """
@@ -292,8 +349,8 @@ def data_transfer(pickle_file: str):
     
     Parameters
     ----------
-    string : str
-1993        Directory path to pickle file.
+    pickle_file : str
+        Directory path to pickle file.
     
     Returns
     -------

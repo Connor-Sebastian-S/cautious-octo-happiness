@@ -22,44 +22,64 @@ Done, and loop
 """
 
 import time
+import os
 
+import glob
+import cv2
 #import schedule
 
 import job_tasks as job
+import script.config as cfg
 
-def process_everything():
-    """
-    The entire process of an experiment is here
+# def process_everything():
+#     """
+#     The entire process of an experiment is here
 
-    Parameters
-    ----------
-    None.
+#     Parameters
+#     ----------
+#     None.
 
-    Returns
-    -------
-    None.
+#     Returns
+#     -------
+#     None.
 
-    """
+#     """
     
-    # Delete old experiment folder
-    job.clean_image_folder()
+#     # Delete old experiment folder
+#     job.clean_image_folder()
     
-    # Create new experiment folder
-    job.create_experiment
+#     # Create new experiment folder
+#     job.create_experiment
 
-    # Capture new images
-    job.capture_images()
+#     # Capture new images
+#     job.capture_images()
 
-    # Format images (name, format, size, etc.)
-    job.format_images()
+#     # Format images (name, format, size, etc.)
+#     job.format_images()
 
-    # Check data integrity and folder structure - final checks
-    job.integrity_check()
+#     # Check data integrity and folder structure - final checks
+#     job.integrity_check()
 
-    # Run the pipeline (finally!)
-    job.run_job()
+#     # Run the pipeline (finally!)
+#     job.run_job()
     
-job.run_job()
+# Get training image files list:
+image_name_arr = glob.glob(os.path.join(cfg.evaluation_dir, "*.png"))
+
+print(image_name_arr)
+
+images_input = []
+
+# Load in the images
+for n, filepath in enumerate(image_name_arr):
+    images_input.append(cv2.imread(filepath))
+    
+print (job.image_similarity(images_input[0], images_input[1]))
+
+#job.create_experiment()
+#job.run_job()
+
+
 
 # # Schedule the 'job() function every Friday at 14:00
 # schedule.every().friday.at("14:00").do(process_everything)
