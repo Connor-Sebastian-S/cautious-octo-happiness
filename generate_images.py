@@ -77,7 +77,7 @@ if do_it:
         if os.path.splitext(x)[1].lower() in (".tif", ".tiff", '.png', '.jpg', '.jpeg')
     ]
     
-    no_of_imgs = 5
+    no_of_imgs = 100
     _c = 1
     for count, img in enumerate(img_files):
         
