@@ -534,6 +534,7 @@ class Position:
         references: List[Tuple[int, int, int, Optional[Tuple[List, List]]]] = []
         for f, img in enumerate(trans_frames):
             for r, roi in enumerate(self.rois):
+                print(r)
                 inputs, windows = roi.get_segmentation_inputs(img)
                 x += [inputs]
                 references += [(r, len(x[-1]), f, windows)]

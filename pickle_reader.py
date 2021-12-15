@@ -60,12 +60,38 @@ def _msg(string: str):
     
 
 def view_lineage(pos: pipe.Position):
-    
+    """
+    View details about cell lineage 
+
+    Parameters
+    ----------
+    pos : Pipeline.Position
+        Saved Position object, from pkl file
+
+    Returns
+    -------
+    None.
+
+    """
     for r in pos.rois:
         cells = r.lineage.cells
-        for c in cells:
+        print(len(cells))
+        for x, c in enumerate (cells):
             # mother frames daughters edges area width length perimeter fluo%d
-            print(np.array(c["fluo1"], dtype=np.float32))
+            
+            np.set_printoptions(formatter={'float': '{: 0.2f}'.format})
+            
+            #_msg('Cell: {}, fluo = {}'.format(x, np.array(c["fluo1"], dtype=np.float32)))
+            
+            _msg('Cell: {}, area = {}'.format(x, np.array(c["area"], dtype=np.float32)))
+            
+            _msg('Cell: {}, length = {}'.format(x, np.array(c["length"], dtype=np.float32)))
+            
+            _msg('Cell: {}, width = {}'.format(x, np.array(c["width"], dtype=np.float32)))
+            
+            _msg('Cell: {}, frames = {}'.format(x, np.array(c["frames"], dtype=np.float32)))
+            
+            # Max fluo value is white, so 255
     
 def load_pickles():
     """
@@ -114,7 +140,7 @@ def load_pickles():
             
             pos.load(position_pkl)
             
-            _msg("Loaded pickle file at %s for project at %s" % (position_pkl, cfg.project_dir))
+            _msg("Loaded pickle file at {} for project at {}".format(position_pkl, cfg.project_dir))
             
             view_lineage(pos)
 

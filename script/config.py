@@ -156,7 +156,7 @@ def load_config(json_file: str = None, presets: str = "2D", config_level: str = 
     import tensorflow as tf
 
     # Hide GPU from visible devices
-    tf.config.set_visible_devices([], 'GPU')
+    #tf.config.set_visible_devices([], 'GPU')
     #tf.config.threading.set_intra_op_parallelism_threads(2)
 
 
