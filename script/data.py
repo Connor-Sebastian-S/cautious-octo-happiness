@@ -324,6 +324,7 @@ def data_augmentation(
             rot = random.randint(0, 3) * 90.0
             if rot > 0:
                 for index, item in enumerate(output):
+                    print(index)
                     output[index] = trans.rotate(
                         item, rot, mode="edge", order=orderlist[index]
                     )
@@ -655,6 +656,7 @@ def trainGenerator_seg(
 
             # Compile into output arrays:
             image_arr[b, :, :, 0] = img
+            print(img.shape)
             mask_wei_arr[b, :, :, 0] = mask
             if weight_path is not None:
                 mask_wei_arr[b, :, :, 1] = weight

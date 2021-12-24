@@ -7,7 +7,7 @@
     "res_dir": "data/evaluation/beta/results",
     "project_dir": "data/evaluation/beta",
     "model_file_rois": "",
-    "model_file_seg": "data/models/unet_agarpads_seg_optimized.hdf5",
+    "model_file_seg": "data/models/unet_seg.hdf5",
     "model_file_track": "data/models/unet_agarpads_track_optimized.hdf5",
     "target_size_rois": [
         512,
