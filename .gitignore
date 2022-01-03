@@ -1,9 +1,3 @@
-data/evaluation/alpha
-data/models
-data/movie_nd2
-data/movie_tif
-data/template
-data/test
-data/training
+data/
 tests/
 train_rois.py
